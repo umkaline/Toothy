@@ -1,0 +1,11 @@
+<% models.forEach(function(model) { %>
+    <li class="list-group-item" data-id="<%= model._id.toString() %>">
+        <img class="img-circle media-object pull-left" src="<%= model.photo %>" width="32" height="32">
+        <div class="media-body">
+            <strong><%= model.firstName + ' ' + model.lastName %></strong>
+            <p>
+                <%= model.phoneNumber %>
+            </p>
+        </div>
+    </li>
+    <% }); %>

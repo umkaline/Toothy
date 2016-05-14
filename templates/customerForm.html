@@ -1,0 +1,76 @@
+<div class="tab-group">
+    <div class="tab-item active" data-id="personal-information">
+        Personal Information
+    </div>
+    <div class="tab-item" data-id="history">
+        History
+    </div>
+</div>
+
+<div id="tab-content-group">
+    <div class="tab-content" data-id="personal-information">
+        <div class="block">
+            <img src="<%= photo %>" id='photo' />
+        </div>
+
+        <div class="block">
+            <div class="form-group">
+                <label>First Name</label>
+                <input type="text" class="form-control" id="first-name" placeholder="First Name" value="<%= firstName %>">
+            </div>
+            <div class="form-group">
+                <label>Last Name</label>
+                <input type="text" class="form-control" id="last-name" placeholder="Last Name" value="<%= lastName %>">
+            </div>
+            <div class="form-group">
+                <label>Middle Name</label>
+                <input type="text" class="form-control" id="middle-name" placeholder="Middle Name" value="<%= middleName %>">
+            </div>
+        </div>
+
+        <div class="block">
+            <div class="radio">
+                <label>
+                    <input type="radio" name="gender" value="male" <%= gender === 'male' ? 'checked' : '' %>> Male
+                </label>
+                <label>
+                    <input type="radio" name="gender" value="female" <%= gender === 'female' ? 'checked' : '' %>> Female
+                </label>
+            </div>
+            <div class="form-group">
+                <label>Date of Birth</label>
+                <input type="date" class="form-control" id="date-of-birth" placeholder="Date of Birth" value="<%= dateOfBirth %>">
+            </div>
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="text" class="form-control" id="phone-number" placeholder="Phone Number" value="<%= phoneNumber %>">
+            </div>
+        </div>
+
+        <div class="block" style="width: 100%">
+            <div class="form-group">
+                <label>Address</label>
+                <textarea class="form-control" id="address" rows="2"><%= address %></textarea>
+            </div>
+            <div class="form-group">
+                <label>Comments</label>
+                <textarea class="form-control" id="comments" rows="6"><%= comments %></textarea>
+            </div>
+        </div>
+
+        <div class="controls">
+            <% if (!newCustomer) { %>
+                <button class="btn btn-large btn-negative" id="remove">
+                Delete
+                </button>
+            <% } %>
+            <button class="btn btn-large btn-primary" id="save">
+                Save
+            </button>
+        </div>
+
+    </div>
+    <div class="tab-content" data-id="history">
+
+    </div>
+</div>

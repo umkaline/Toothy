@@ -1,19 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using node <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-  </body>
 
-  <script>
-    // You can also require other files to run in this process
-    require('./renderer.js')
-  </script>
+<head>
+    <meta charset="UTF-8">
+    <title>Toothy</title>
+    <link rel="stylesheet" href="./css/photon.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <script src="app.js" defer></script>
+</head>
+
+<body>
+    <div class="window">
+        <div class="window-content">
+            <button class="btn btn-positive" id="new-customer">New Customer</button>
+            <div class="pane-group">
+                <div class="pane" id="customer-list">
+                    <ul class="list-group">
+                        <li class="list-group-header" id="search">
+                            <input class="form-control" type="text" placeholder="Search for someone">
+                        </li>
+                    </ul>
+                </div>
+                <div class="pane" id="content-holder">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
 </html>

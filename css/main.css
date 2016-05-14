@@ -1,0 +1,47 @@
+#new-customer {
+    z-index: 100;
+    position: absolute;
+    bottom: 5px;
+    left: 55px;
+}
+
+#photo {
+    max-width: 250px;
+    max-height: 250px;
+    margin: 0px 5px 20px 5px;
+}
+
+#customer-list li:hover {
+    background-color: skyblue;
+}
+
+div#customer-list {
+    width: 250px;
+    flex: none;
+}
+
+div.block {
+    margin: auto;
+}
+
+div.tab-content {
+    padding: 20px 50px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    align-content:center;
+}
+
+div.controls {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+    justify-content: center;
+}
+
+div.controls button {
+    margin: 35px;
+}
