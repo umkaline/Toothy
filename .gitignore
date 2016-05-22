@@ -1,3 +1,5 @@
 node_modules
 /toothy-linux-x64/
 /data/
+/bower_components/
+/toothy-win32-x64/

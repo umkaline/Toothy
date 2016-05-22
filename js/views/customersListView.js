@@ -1,10 +1,12 @@
 var Backbone = require('backbone');
 var remote = require('electron').remote;
+var path = require('path');
 var fs = remote.require('fs');
 var $ = require('jquery');
 var _ = require('underscore');
-var customersListTemplate = fs.readFileSync('./templates/customersList.html', encoding = "utf8");
+var customersListTemplate = fs.readFileSync(path.join(__dirname, '/../../templates/customersList.html'), encoding = "utf8");
 var CustomerFormView = require('./customerFormView');
+var CalendarView = require('./CalendarView');
 
 var CustomersListView = Backbone.View.extend({
     el: '#customer-list ul',
@@ -28,6 +30,7 @@ var CustomersListView = Backbone.View.extend({
 
     events: {
         'keyup #search': 'search',
+        'click #calendar': 'showCalendar',
         'click .list-group-item': 'openCustomer'
     },
 
@@ -39,6 +42,10 @@ var CustomersListView = Backbone.View.extend({
             firstName: 1,
             lastName: 1,
             phoneNumber: 1
+        })
+        .sort({
+            nextVisit: 1,
+            nextVisitTime: 1
         })
         .toArray(function (err, res) {
             if (err) {
@@ -97,8 +104,13 @@ var CustomersListView = Backbone.View.extend({
     openCustomer: function (e, id) {
         var self = this;
         var options = {};
-        var customerId = id || $(e.target).closest('li').attr('data-id');
+        var $el = e && e.target && $(e.target).closest('li');
+        var $el = $el || self.$el.find('li[data-id="' + id + '"]');
+        var customerId = id || $el.attr('data-id');
         e && e.preventDefault();
+
+        $('li.active').removeClass('active');
+        $el.addClass('active');
 
         options.new = false;
         options.db = self.db;
@@ -107,6 +119,19 @@ var CustomersListView = Backbone.View.extend({
 
         App.contentView && App.contentView.undelegateEvents();
         App.contentView = new CustomerFormView(options);
+    },
+
+    showCalendar: function (e) {
+        var self = this;
+        var options = {};
+
+        e && e.preventDefault();
+
+        options.db = self.db;
+        options.eventChannel = self.eventChannel;
+
+        App.contentView && App.contentView.undelegateEvents();
+        App.contentView = new CalendarView(options);
     },
 
     render: function () {

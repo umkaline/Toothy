@@ -4,18 +4,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Toothy</title>
+    <link rel="stylesheet" href="./node_modules/fullcalendar/dist/fullcalendar.css">
     <link rel="stylesheet" href="./css/photon.css">
     <link rel="stylesheet" href="./css/main.css">
+    <!--<link rel="stylesheet" href="./js/libs/jquery-ui/jquery-ui.css">-->
+    <!--<link rel="stylesheet" media='print' href="./node_modules/fullcalendar/dist/fullcalendar.print.css">-->
     <script src="app.js" defer></script>
 </head>
 
 <body>
     <div class="window">
         <div class="window-content">
-            <button class="btn btn-positive" id="new-customer">New Customer</button>
             <div class="pane-group">
                 <div class="pane" id="customer-list">
                     <ul class="list-group">
+                       <div class="btn-group">
+                                <button class="btn btn-large btn-default" id="calendar">
+                                    <span class="icon icon-calendar"></span>
+                                </button>
+                                <button class="btn btn-large btn-default" id="dictionaries">
+                                    <span class="icon icon-doc-text"></span>
+                                </button>
+                                <button class="btn btn-large btn-default">
+                                    <span class="icon icon-cog"></span>
+                                </button>
+                                <button class="btn btn-large btn-default">
+                                    <span class="icon icon-chart-line"></span>
+                                </button>
+                                <button class="btn btn-large btn-default" id="new-customer">
+                                    <span class="icon icon-user-add"></span>
+                                </button>
+                            </div>
                         <li class="list-group-header" id="search">
                             <input class="form-control" type="text" placeholder="Search for someone">
                         </li>

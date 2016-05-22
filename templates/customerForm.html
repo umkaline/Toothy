@@ -5,6 +5,12 @@
     <div class="tab-item" data-id="history">
         History
     </div>
+    <div class="tab-item" data-id="treatment-plan">
+        Treatment plan
+    </div>
+       <div class="tab-item" data-id="odontogram">
+        Odontogram
+    </div>
 </div>
 
 <div id="tab-content-group">
@@ -45,6 +51,11 @@
                 <label>Phone Number</label>
                 <input type="text" class="form-control" id="phone-number" placeholder="Phone Number" value="<%= phoneNumber %>">
             </div>
+            <div class="form-group">
+                <label>Next Visit</label>
+                <input type="date" class="form-control" id="next-visit-date" value="<%= nextVisit %>">
+                <input type="time" class="form-control" id="next-visit-time" value="<%= nextVisitTime %>">
+            </div>
         </div>
 
         <div class="block" style="width: 100%">
@@ -71,6 +82,54 @@
 
     </div>
     <div class="tab-content" data-id="history">
-
+        history
+    </div>
+    <div class="tab-content" data-id="treatment-plan">
+        <table class="table-striped" data-type="plans">
+          <thead>
+            <tr>
+              <th>Service</th>
+              <th>Material</th>
+              <th>Comment</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+           <% plans.forEach(function(plan) { %>
+               <tr data-id="<%= plan._id %>">
+                  <td><%= plan.service %></td>
+                  <td><%= plan.material %></td>
+                  <td><%= plan.comment %></td>
+                  <td><%= plan.price %></td>
+                  <td><span class="icon icon-cancel"></span></td>
+                </tr>
+           <% }); %>
+           </tbody>
+            <tfoot>
+            <tr>
+              <td>
+                  <select class="form-control" id="service">
+                    <% services.forEach(function(service) { %>
+                        <option value="<%= service.price %>"><%= service.name %></option>
+                    <% }); %>
+                  </select>
+              </td>
+              <td>
+                  <select class="form-control" id="material">
+                    <% materials.forEach(function(material) { %>
+                        <option value="<%= material.price %>"><%= material.name %></option>
+                    <% }); %>
+                  </select>
+              </td>
+              <td><input type="text" class="form-control comment" placeholder="Comment"></td>
+              <td><input type="number" class="form-control price" placeholder="Price"></td>
+              <td><button class="btn btn-mini btn-positive" data-type="plans">Add</button></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="tab-content" data-id="odontogram">
+        odontogram
     </div>
 </div>

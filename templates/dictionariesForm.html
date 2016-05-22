@@ -1,0 +1,65 @@
+<div class="tab-group">
+    <div class="tab-item active" data-id="services">
+        Services
+    </div>
+    <div class="tab-item" data-id="materials">
+        Materials
+    </div>
+</div>
+
+<div id="tab-content-group">
+    <div class="tab-content" data-id="services">
+        <table class="table-striped" data-type="services">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+           <% services.forEach(function(service) { %>
+               <tr data-id="<%= service._id %>">
+                  <td><%= service.name %></td>
+                  <td><%= service.price %></td>
+                  <td><span class="icon icon-cancel"></span></td>
+                </tr>
+           <% }); %>
+           </tbody>
+            <tfoot>
+            <tr>
+              <td><input type="text" class="form-control name" placeholder="Name" data-type="service"></td>
+              <td><input type="number" class="form-control price" placeholder="Price" data-type="service"></td>
+              <td><button class="btn btn-mini btn-positive" data-type="services">Add</button></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+    <div class="tab-content" data-id="materials">
+        <table class="table-striped" data-type="materials">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Price</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+           <% materials.forEach(function(material) { %>
+               <tr data-id="<%= material._id %>">
+                  <td><%= material.name %></td>
+                  <td><%= material.price %></td>
+                  <td><span class="icon icon-cancel"></span></td>
+                </tr>
+           <% }); %>
+           </tbody>
+            <tfoot>
+            <tr>
+              <td><input type="text" class="form-control name" placeholder="Name" data-type="materials"></td>
+              <td><input type="number" class="form-control price" placeholder="Price" data-type="materials"></td>
+              <td><button class="btn btn-mini btn-positive" data-type="materials">Add</button></td>
+            </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
