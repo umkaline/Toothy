@@ -82,7 +82,92 @@
 
     </div>
     <div class="tab-content" data-id="history">
-        history
+        <span class="icon icon-plus-circled add-history"></span>
+
+        <div class="history-element new-history-element" style="display:none">
+            <div style="width:100%">
+                <div class="form-group">
+                    <span class="table-caption">Visit date/time:</span>
+                    <input style="width:200px" type="date" class="form-control" id="visit-date" value="<%= nextVisit %>">
+                    <input style="width:200px" type="time" class="form-control" id="visit-time" value="<%= nextVisitTime %>">
+                </div>
+                <div class="form-group">
+                    <label class="table-caption">Comments:</label>
+                    <textarea class="form-control" id="visit-comments" rows="6"></textarea>
+                </div>
+                <span class="table-caption">Done:</span>
+               <table class="table-striped" data-type="done">
+                   <tbody>
+                   </tbody>
+                </table>
+                    <br/>
+                    <span class="table-caption">Treatment plan:</span>
+                    <table class="table-striped" data-type="plans">
+                      <tbody>
+                       <% plans.forEach(function(plan) { %>
+                           <tr data-id="<%= plan._id %>">
+                              <td><%= plan.service %></td>
+                              <td><%= plan.material %></td>
+                              <td><%= plan.comment %></td>
+                              <td class="plan-price"><%= plan.price %></td>
+                              <td><span class="icon icon-arrow-combo treatment-move"></span></td>
+                            </tr>
+                       <% }); %>
+                       </tbody>
+                    </table>
+                    <div class="form-group" id="visit-total">
+                        <span class="table-caption">Total:</span>
+                        <input type="number" class="form-control" value="0">
+                    </div>
+                    <div class="controls">
+                        <button class="btn btn-large btn-negative" id="cancel-visit">
+                        Cancel
+                        </button>
+                        <button class="btn btn-large btn-primary" id="save-visit">
+                            Save
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <% visits.forEach(function(visit) { %>
+                <div class="history-element">
+                    <div class="visit-date">
+                        <span class="visit-date-span">
+                            <%= visit.visitDate %>
+                            <%= visit.visitTime %>
+                        </span>
+                    </div>
+                <div class="visit-details">
+                    <div>
+                        <%= visit.comment %>
+                    </div>
+                    <table class="table-striped" data-type="plans">
+                        <tbody>
+                            <% visit.done.forEach(function(doneEl) { %>
+                                <tr>
+                                  <td><%= doneEl.service %></td>
+                                  <td><%= doneEl.material %></td>
+                                  <td><%= doneEl.comment %></td>
+                                  <td><%= doneEl.price %></td>
+                                </tr>
+                            <% }); %>
+
+                            <tfoot>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>Total</td>
+                                    <td><%= visit.total %></td>
+                                </tr>
+                            </tfoot>
+
+                        </tbody>
+                    </table>
+                </div>
+                <span class="icon icon-cancel visit-remove" data-id=<%= visit._id %>></span>
+            </div>
+           <% }); %>
     </div>
     <div class="tab-content" data-id="treatment-plan">
         <table class="table-striped" data-type="plans">
@@ -102,7 +187,7 @@
                   <td><%= plan.material %></td>
                   <td><%= plan.comment %></td>
                   <td><%= plan.price %></td>
-                  <td><span class="icon icon-cancel"></span></td>
+                  <td><span class="icon icon-cancel plan-remove"></span></td>
                 </tr>
            <% }); %>
            </tbody>

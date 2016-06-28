@@ -18,6 +18,7 @@ var CustomerFormView = Backbone.View.extend({
 
         App = window.App;
 
+        self.options = options;
         self.db = options.db;
         self.new = options.new;
         self.eventChannel = options.eventChannel;
@@ -27,16 +28,19 @@ var CustomerFormView = Backbone.View.extend({
         if (!self.new) {
             self.customerId = options.customerId;
 
-            self.db.collection('customers').find({
-                    _id: self.customerId
-                }).toArray(function (err, model) {
-                    if (!err) {
-                        self.db.collection('plans').find({customerId: self.customerId}).toArray(function(err, result) {
-                                self.plans = result;
-                                self.model = model[0];
-                                self.render();
-                            });
-                    }
+            self.db.collection('customers').find({_id: self.customerId}).toArray(function (err, model) {
+                self.db.collection('plans').find({customerId: self.customerId}).toArray(function(err, result) {
+                        self.plans = result;
+                        self.model = model[0];
+
+                        self.db.collection('visits').find({customerId: self.customerId}).sort({
+                                visitDate: -1,
+                                visitTime: -1
+                            }).toArray(function(err, result) {
+                            self.visits = result;
+                            self.render();
+                        });
+                    });
                 });
         } else {
             self.render();
@@ -62,9 +66,103 @@ var CustomerFormView = Backbone.View.extend({
         'click #remove': 'remove',
         'click .tab-item': 'switchTab',
         'click #photo': 'choosePhoto',
-        'click .icon-cancel': 'removePlan',
+        'click .plan-remove': 'removePlan',
+        'click .visit-remove': 'removeVisit',
         'click button.btn-positive': 'addPlan',
-        'change select' : 'calculatePrice'
+        'change select' : 'calculatePrice',
+        'click .add-history': 'addVisit',
+        'click #save-visit': 'saveVisit',
+        'click #cancel-visit': 'cancelVisit',
+        'click .treatment-move': 'treatmentMove'
+    },
+
+    treatmentMove: function(e) {
+        var self = this;
+        var $target = $(e.target).closest('tr');
+        var $parentTable = $target.closest('table')
+        var oppTable = $parentTable.siblings('table');
+        var parentTable = $parentTable.attr('data-type');
+        var $total = $('#visit-total input');
+        var total = parseInt($total.val());
+        var price = parseInt($target.find('td.plan-price').html());
+
+        e.preventDefault();
+
+        $target.detach();
+        oppTable.append($target);
+
+        $total.val(total + (parentTable === 'plans' ? price : -price));
+    },
+
+    removeVisit: function(e) {
+        var self = this;
+        var visitId = $(e.target).attr('data-id');
+
+        self.db.collection('visits').find({_id: visitId}).toArray(function(err, result) {
+
+            self.db.collection('plans').insert(result[0].done, function() {
+
+                self.db.collection('visits').remove({_id: visitId}, function() {
+
+                    self.initialize(self.options);
+
+                });
+
+            });
+
+            self.db.collection('plans').remove({_id: {$in: plansToSave}});
+        });
+
+        e.preventDefault();
+    },
+
+    addVisit: function(e) {
+        var self = this;
+        var newHistoryElement = $('.new-history-element');
+
+        newHistoryElement.show();
+
+        e.preventDefault();
+    },
+
+    saveVisit: function(e) {
+        var self = this;
+        var $parent = $('.new-history-element div');
+        var $tr;
+        var treatmentId;
+        var plansToSave = $.map($('table[data-type="done"] tr'), function (tr) {
+            $tr = $(tr);
+            treatmentId = $tr.attr('data-id');
+            return treatmentId;
+        });
+        var newVisit = {
+            visitDate: $('#visit-date').val(),
+            visitTime: $('#visit-time').val(),
+            total: parseInt($('#visit-total input').val()) || 0,
+            comment: $('#visit-comments').val(),
+            customerId: self.customerId
+        };
+
+        self.db.collection('plans').find({_id: {$in: plansToSave}}).toArray(function(err, result) {
+            newVisit.done = result;
+
+            self.db.collection('visits').insert(newVisit, function() {
+                self.initialize(self.options);
+            });
+
+            self.db.collection('plans').remove({_id: {$in: plansToSave}});
+        });
+
+        e.preventDefault();
+    },
+
+    cancelVisit: function(e) {
+        var self = this;
+        var newHistoryElement = $('.new-history-element');
+
+        e.preventDefault();
+
+        self.initialize(self.options);
     },
 
     removePlan: function (e) {
@@ -77,6 +175,8 @@ var CustomerFormView = Backbone.View.extend({
         self.db.collection(collection).remove({_id: id}, function(err, result) {
             $(e.target).closest('tr').remove();
         });
+
+        self.initialize(self.options);
     },
 
     calculatePrice: function (e) {
@@ -121,6 +221,8 @@ var CustomerFormView = Backbone.View.extend({
             <td><span class="icon icon-cancel"></span></td>
             </tr>`);
         });
+
+        self.initialize(self.options);
     },
 
     saveCustomer: function (e) {
@@ -172,15 +274,24 @@ var CustomerFormView = Backbone.View.extend({
 
     switchTab: function (e) {
         var self = this;
-        var $target = $(e.target);
+        var $target = $(e.target || e);
         var tabName = $target.attr('data-id');
-        e.preventDefault();
+        e.preventDefault && e.preventDefault();
+
+        self.$currentTab = $target;
 
         $('.tab-item').removeClass('active');
         $target.addClass('active');
 
         $('.tab-content').hide();
         $('.tab-content[data-id="' + tabName + '"]').show();
+    },
+
+    restoreTab: function() {
+        var self = this;
+        var $target = self.$currentTab
+
+        $target.click();
     },
 
     choosePhoto: function (e) {
@@ -221,6 +332,7 @@ var CustomerFormView = Backbone.View.extend({
         model.photo = model.photo || './data/photos/Icon-user.png';
 
         model.plans = self.plans || [];
+        model.visits = self.visits || [];
         model.materials = self.materials || [];
         model.services = self.services || [];
 
@@ -228,7 +340,7 @@ var CustomerFormView = Backbone.View.extend({
 
         self.$el.html(self.template(model));
 
-        $('div.tab-item').first().click();
+        self.switchTab(self.$currentTab || $('div.tab-item').first());
     }
 });
 

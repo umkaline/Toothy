@@ -13,7 +13,7 @@ var eventChannel = {};
 
 require('fullcalendar');
 //require('jquery-ui');
-//require('bootstrap');
+require('bootstrap');
 //require('transition');
 //require('collapse');
 //require('./node_modules/bootstrap-datetimepicker/src/js/bootstrap-datetimepicker');

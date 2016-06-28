@@ -14,8 +14,61 @@
     margin: 0px 5px 20px 5px;
 }
 
+.visit-date, .visit-details {
+    padding: 10px;
+    margin: 3px 2px;
+}
+
+.visit-details {
+    background-color: #eee;
+    order: 2;
+    flex-grow: 1;
+}
+
+.visit-date {
+    order: 1;
+    width: 100px;
+    background-color: dimgrey;
+    text-align: center;
+    color: aliceblue;
+    flex-shrink: 0;
+}
+
+#visit-total {
+    width: 150px;
+    padding-top: 50px;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+div.tab-content[data-id="history"] {
+    padding: 10px;
+}
+
+.visit-date-span {
+
+}
+
+.history-element {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    padding: 0;
+}
+
+.history-element span.icon-cancel {
+    order: 3;
+}
+
 tfoot input {
     background-color: aliceblue
+}
+
+.icon-arrow-combo:hover, .icon-cancel:hover {
+    background-color: skyblue;
 }
 
 #customer-list li:hover {
@@ -39,6 +92,30 @@ div.tab-content {
     justify-content: space-around;
     align-items: center;
     align-content:center;
+}
+
+.table-caption {
+    font-weight: bold
+}
+
+.add-history {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    font-size: xx-large;
+    width: 50px;
+    text-align: center;
+}
+
+.new-history-element {
+    background-color: rgba(227, 227, 227, 0.53);
+    padding: 15px 15px 0px 15px;
+    margin: 10px;
+    width: 100%
+}
+
+.add-history:hover {
+    background-color: chartreuse;
 }
 
 div.controls {
