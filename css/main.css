@@ -84,6 +84,10 @@ div.block {
     margin: auto;
 }
 
+div.accordion {
+    width: 100%;
+}
+
 div.tab-content {
     padding: 20px 50px;
     display: flex;

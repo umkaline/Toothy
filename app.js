@@ -11,8 +11,12 @@ var db = new Engine.Db(path.join(__dirname, '/data/db'), {});
 var App;
 var eventChannel = {};
 
+$.ui = {};
+
+require('./node_modules/jquery-ui/ui/core');
+require('./node_modules/jquery-ui/ui/widget');
+require('./node_modules/jquery-ui/ui/widgets/accordion');
 require('fullcalendar');
-//require('jquery-ui');
 require('bootstrap');
 //require('transition');
 //require('collapse');

@@ -18,18 +18,24 @@ var DictionariesView = Backbone.View.extend({
         self.db = options.db;
         self.eventChannel = options.eventChannel;
 
-        self.render = _.after(2, self.render);
+        self.prepareDate = _.after(3, self.prepareDate);
 
         self.db.collection('services').find({})
                 .toArray(function(err, result) {
             self.services = result;
-            self.render();
+            self.prepareDate();
         });
 
         self.db.collection('materials').find({})
                 .toArray(function(err, result) {
             self.materials = result;
-            self.render();
+            self.prepareDate();
+        });
+
+        self.db.collection('dictGroups').find({})
+                .toArray(function(err, result) {
+            self.dictGroups = result;
+            self.prepareDate();
         });
     },
 
@@ -37,7 +43,18 @@ var DictionariesView = Backbone.View.extend({
         'click #save': 'saveCustomer',
         'click .icon-cancel': 'remove',
         'click button.btn-positive': 'add',
-        'click .tab-item': 'switchTab'
+        'click .tab-item': 'switchTab',
+        'change input[type="color"][data-type="dictGroups"]': 'changeGroupColor'
+    },
+
+    changeGroupColor: function(e) {
+        var self = this;
+        var id = $(e.target).closest('tr').attr('data-id');
+        var color = $(e.target).val();
+
+        self.db.collection('dictGroups').update({_id: id}, {$set: {color: color}}, function (err, res) {
+                self.eventChannel.trigger('groupUpdated');
+        });
     },
 
     saveCustomer: function (e) {
@@ -60,15 +77,19 @@ var DictionariesView = Backbone.View.extend({
 
     add: function (e) {
         var self = this;
-        var collection = $(e.target).attr('data-type');
-        var $tbody = $(e.target).closest('table').find('tbody');
-        var $parent = $(e.target).closest('tr');
-        var name = $parent.find('input.name').val();
-        var price = $parent.find('input.price').val() || 0;
-        var data = {
-            name: name,
-            price: price
-        }
+        var collection;
+        var $tbody;
+        var $parent;
+        var params;
+        var name;
+        var price;
+        var data;
+
+        collection = $(e.target).attr('data-type');
+        $tbody = $(e.target).closest('table').find('tbody');
+        $parent = $(e.target).closest('tr');
+        name = $parent.find('input.name').val();
+
 
         e.preventDefault();
 
@@ -76,13 +97,55 @@ var DictionariesView = Backbone.View.extend({
             return alert('Name can\'t be empty');
         }
 
-        self.db.collection(collection).insert(data, function(err, result) {
-            $tbody.append(`<tr>
-            <td>${name}</td>
-            <td>${price}</td>
-            <td><span class="icon icon-cancel"></span></td>
-            </tr>`);
-        });
+        if (collection === 'dictGroups') {
+
+            params = {
+                collection: collection,
+                $tbody: $tbody,
+                $parent: $parent,
+                name: name
+            };
+
+            self.addGroup(params);
+
+        } else {
+
+            price = $parent.find('input.price').val() || 0;
+            data = {
+                name: name,
+                price: price
+            };
+
+            self.db.collection(collection).insert(data, function(err, result) {
+                $tbody.append(`<tr data-id="${result[0]._id.id}">
+                <td>${name}</td>
+                <td>${price}</td>
+                <td><span class="icon icon-cancel"></span></td>
+                </tr>`);
+            });
+        }
+
+    },
+
+    addGroup: function (params) {
+        var self = this;
+
+        var color = params.$parent.find('input.color').val() || '#808080';
+            data = {
+                name: params.name,
+                color: color
+            };
+
+            self.db.collection(params.collection).insert(data, function(err, result) {
+                params.$tbody.append(`<tr data-id="${result[0]._id.id}">
+                <td>${params.name}</td>
+                <td><input type="color" class="form-control color" value="${color}" data-type="dictGruops"></td>
+                <td><span class="icon icon-cancel"></span></td>
+                </tr>`);
+
+                self.updateNeeded = true;
+            });
+
     },
 
     switchTab: function (e) {
@@ -98,16 +161,60 @@ var DictionariesView = Backbone.View.extend({
         $('.tab-content[data-id="' + tabName + '"]').show();
     },
 
+    prepareDate: function() {
+        var self = this;
+        var data = [];
+        var m = [];
+        var s = [];
+
+        self.dictGroups.forEach(function(dictGroup) {
+
+            self.services.forEach(function(service, i) {
+                if (service.group === dictGroup._id) {
+                    s.push(service);
+                    self.services.splice(i, 1);
+                }
+            });
+
+            self.materials.forEach(function(material, i) {
+                if (service.group === dictGroup._id) {
+                    m.push(material);
+                    self.materials.splice(i, 1);
+                }
+            });
+
+            data.push({
+                id: dictGroup._id,
+                color: dictGroup.color,
+                name: dictGroup.name,
+                services: s,
+                materials: m
+            });
+
+            services = [];
+            materials = [];
+        });
+
+        self.data = data;
+
+        self.render();
+    },
+
     render: function () {
         var self = this;
         var data = {
             services: self.services || [],
-            materials: self.materials || []
+            materials: self.materials || [],
+            dictGroups: self.dictGroups || [],
+            data: self.data
         };
 
         self.$el.html(self.template(data));
 
         $('div.tab-item').first().click();
+        $('div.accordion').accordion({
+          heightStyle: "content"
+        });
     }
 });
 
