@@ -40,39 +40,9 @@
     </div>
     <div class="tab-content" data-id="materials">
         <div class="accordion">
-            <h3 style="background:grey;">No Group:</h3>
-            <div>
-                <p>
-                    <table class="table-striped" data-type="materials">
-                      <thead>
-                        <tr>
-                          <th>Name</th>
-                          <th>Price</th>
-                          <th></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                       <% materials.forEach(function(material) { %>
-                           <tr data-id="<%= material._id %>">
-                              <td><%= material.name %></td>
-                              <td><%= material.price %></td>
-                              <td><span class="icon icon-cancel"></span></td>
-                            </tr>
-                       <% }); %>
-                       </tbody>
-                        <tfoot>
-                        <tr>
-                          <td><input type="text" class="form-control name" placeholder="Name" data-type="materials"></td>
-                          <td><input type="number" class="form-control price" placeholder="Price" data-type="materials"></td>
-                          <td><button class="btn btn-mini btn-positive" data-type="materials">Add</button></td>
-                        </tr>
-                        </tfoot>
-                    </table>
-                </p>
-            </div>
             <% data.forEach(function(group) { %>
                 <h3 style="background:<%= group.color %>;"><%= group.name %>:</h3>
-                <div>
+                <div group-id="<%= group.id %>" class="groupHolder">
                     <p>
                         <table class="table-striped" data-type="materials">
                           <thead>
@@ -83,10 +53,18 @@
                             </tr>
                           </thead>
                           <tbody>
-                           <% materials.forEach(function(material) { %>
+                           <% group.materials.forEach(function(material) { %>
                                <tr data-id="<%= material._id %>">
                                   <td><%= material.name %></td>
                                   <td><%= material.price %></td>
+                                    <td>
+                                      <select class="form-control">
+                                        <% dictGroups.forEach(function(gr) { %>
+                                            <option value="<%= gr._id %>" <%= gr._id === group.id ? 'selected="selected"' : '' %> ><%= gr.name %></option>
+                                        <% }); %>
+                                            <option value="-1" <%= -1 === group.id ? 'selected="selected"' : '' %> >No Group</option>
+                                      </select>
+                                    </td>
                                   <td><span class="icon icon-cancel"></span></td>
                                 </tr>
                            <% }); %>
@@ -95,7 +73,7 @@
                             <tr>
                               <td><input type="text" class="form-control name" placeholder="Name" data-type="materials"></td>
                               <td><input type="number" class="form-control price" placeholder="Price" data-type="materials"></td>
-                              <td><button class="btn btn-mini btn-positive" data-type="materials">Add</button></td>
+                              <td><button class="btn btn-mini btn-positive" data-type="materials" group-id="<%= group.id %>">Add</button></td>
                             </tr>
                             </tfoot>
                         </table>

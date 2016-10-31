@@ -84,8 +84,10 @@ var DictionariesView = Backbone.View.extend({
         var name;
         var price;
         var data;
+        var group;
 
         collection = $(e.target).attr('data-type');
+        group = $(e.target).attr('group-id');
         $tbody = $(e.target).closest('table').find('tbody');
         $parent = $(e.target).closest('tr');
         name = $parent.find('input.name').val();
@@ -113,7 +115,8 @@ var DictionariesView = Backbone.View.extend({
             price = $parent.find('input.price').val() || 0;
             data = {
                 name: name,
-                price: price
+                price: price,
+                group: group
             };
 
             self.db.collection(collection).insert(data, function(err, result) {
@@ -170,14 +173,14 @@ var DictionariesView = Backbone.View.extend({
         self.dictGroups.forEach(function(dictGroup) {
 
             self.services.forEach(function(service, i) {
-                if (service.group === dictGroup._id) {
+                if (service.group == dictGroup._id.id) {
                     s.push(service);
                     self.services.splice(i, 1);
                 }
             });
 
             self.materials.forEach(function(material, i) {
-                if (service.group === dictGroup._id) {
+                if (material.group == dictGroup._id.id) {
                     m.push(material);
                     self.materials.splice(i, 1);
                 }
@@ -191,9 +194,17 @@ var DictionariesView = Backbone.View.extend({
                 materials: m
             });
 
-            services = [];
-            materials = [];
+            s = [];
+            m = [];
         });
+
+        data.unshift({
+                id: -1,
+                color: '#909090',
+                name: "No Group",
+                services: self.materials,
+                materials: self.materials
+            });
 
         self.data = data;
 
