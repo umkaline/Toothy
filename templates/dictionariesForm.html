@@ -12,36 +12,54 @@
 
 <div id="tab-content-group">
     <div class="tab-content" data-id="services">
-        <table class="table-striped" data-type="services">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Price</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-           <% services.forEach(function(service) { %>
-               <tr data-id="<%= service._id %>">
-                  <td><%= service.name %></td>
-                  <td><%= service.price %></td>
-                  <td><span class="icon icon-cancel"></span></td>
-                </tr>
-           <% }); %>
-           </tbody>
-            <tfoot>
-            <tr>
-              <td><input type="text" class="form-control name" placeholder="Name" data-type="service"></td>
-              <td><input type="number" class="form-control price" placeholder="Price" data-type="service"></td>
-              <td><button class="btn btn-mini btn-positive" data-type="services">Add</button></td>
-            </tr>
-            </tfoot>
-        </table>
+        <div class="accordion">
+            <% data.forEach(function(group) { %>
+                <h3 style="background:<%= group.color %>;" group-id="<%= group.id %>"><%= group.name %>:</h3>
+                <div group-id="<%= group.id %>" class="groupHolder">
+                    <p>
+                        <table class="table-striped" data-type="services">
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Price</th>
+                              <th>Group</th>
+                              <th></th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                           <% group.services.forEach(function(service) { %>
+                               <tr data-id="<%= service._id %>">
+                                  <td><%= service.name %></td>
+                                  <td><%= service.price %></td>
+                                    <td>
+                                      <select class="form-control">
+                                        <% dictGroups.forEach(function(gr) { %>
+                                            <option value="<%= gr._id %>" <%= gr._id === group.id ? 'selected="selected"' : '' %> ><%= gr.name %></option>
+                                        <% }); %>
+                                            <option value="-1" <%= -1 === group.id ? 'selected="selected"' : '' %> >No Group</option>
+                                      </select>
+                                    </td>
+                                  <td><span class="icon icon-cancel"></span></td>
+                                </tr>
+                           <% }); %>
+                           </tbody>
+                            <tfoot>
+                            <tr>
+                              <td><input type="text" class="form-control name" placeholder="Name" data-type="service"></td>
+                              <td><input type="number" class="form-control price" placeholder="Price" data-type="service"></td>
+                              <td><button class="btn btn-mini btn-positive" data-type="services" group-id="<%= group.id %>">Add</button></td>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </p>
+                </div>
+            <% }); %>
+        </div>   
     </div>
     <div class="tab-content" data-id="materials">
         <div class="accordion">
             <% data.forEach(function(group) { %>
-                <h3 style="background:<%= group.color %>;"><%= group.name %>:</h3>
+                <h3 style="background:<%= group.color %>;" group-id="<%= group.id %>"><%= group.name %>:</h3>
                 <div group-id="<%= group.id %>" class="groupHolder">
                     <p>
                         <table class="table-striped" data-type="materials">
@@ -49,6 +67,7 @@
                             <tr>
                               <th>Name</th>
                               <th>Price</th>
+                              <th>Group</th>
                               <th></th>
                             </tr>
                           </thead>

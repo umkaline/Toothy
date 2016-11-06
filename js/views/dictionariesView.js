@@ -44,13 +44,31 @@ var DictionariesView = Backbone.View.extend({
         'click .icon-cancel': 'remove',
         'click button.btn-positive': 'add',
         'click .tab-item': 'switchTab',
-        'change input[type="color"][data-type="dictGroups"]': 'changeGroupColor'
+        'change input[type="color"][data-type="dictGroups"]': 'changeGroupColor',
+        'change select': 'moveToGroup'
+    },
+    
+    moveToGroup: function(e) {
+        var self = this;
+        var $target = $(e.target);
+        var itemType = $target.parents('table').attr('data-type');
+        var newGroupId = $target.val();
+        var $row = $target.closest('tr').detach();
+        var itemId = $row.attr('data-id');
+        var newGroupHolderTable = $('div[data-id=' + itemType + '] div.groupHolder[group-id=' + newGroupId + '] tbody');
+        
+        newGroupHolderTable.append($row);
+        
+        self.db.collection(itemType).update({_id: itemId}, {$set: {group: newGroupId}}, function (err, res) {
+        });
     },
 
     changeGroupColor: function(e) {
         var self = this;
         var id = $(e.target).closest('tr').attr('data-id');
         var color = $(e.target).val();
+        
+        $('h3[group-id=' + id + ']').css({'background': color});
 
         self.db.collection('dictGroups').update({_id: id}, {$set: {color: color}}, function (err, res) {
                 self.eventChannel.trigger('groupUpdated');
@@ -72,6 +90,10 @@ var DictionariesView = Backbone.View.extend({
 
         self.db.collection(collection).remove({_id: id}, function(err, result) {
             $(e.target).closest('tr').remove();
+
+            if (collection === 'dictGroups') {
+                self.updateNeeded = true;
+            }
         });
     },
 
@@ -157,11 +179,16 @@ var DictionariesView = Backbone.View.extend({
         var tabName = $target.attr('data-id');
         e.preventDefault();
 
-        $('.tab-item').removeClass('active');
-        $target.addClass('active');
+        if (self.updateNeeded) {
+            self.tabName = tabName;
+            self.initialize(self);
+        } else {
+            $('.tab-item').removeClass('active');
+            $target.addClass('active');
 
-        $('.tab-content').hide();
-        $('.tab-content[data-id="' + tabName + '"]').show();
+            $('.tab-content').hide();
+            $('.tab-content[data-id="' + tabName + '"]').show();
+        }
     },
 
     prepareDate: function() {
@@ -172,19 +199,21 @@ var DictionariesView = Backbone.View.extend({
 
         self.dictGroups.forEach(function(dictGroup) {
 
-            self.services.forEach(function(service, i) {
-                if (service.group == dictGroup._id.id) {
-                    s.push(service);
+            for (var i = 0; i < self.services.length; i++) {
+                if (self.services[i].group == dictGroup._id.id) {
+                    s.push(self.services[i]);
                     self.services.splice(i, 1);
+                    i--;
                 }
-            });
+            } 
 
-            self.materials.forEach(function(material, i) {
-                if (material.group == dictGroup._id.id) {
-                    m.push(material);
+            for (var i = 0; i < self.materials.length; i++) {
+                if (self.materials[i].group == dictGroup._id.id) {
+                    m.push(self.materials[i]);
                     self.materials.splice(i, 1);
+                    i--;
                 }
-            });
+            } 
 
             data.push({
                 id: dictGroup._id,
@@ -202,7 +231,7 @@ var DictionariesView = Backbone.View.extend({
                 id: -1,
                 color: '#909090',
                 name: "No Group",
-                services: self.materials,
+                services: self.services,
                 materials: self.materials
             });
 
@@ -222,7 +251,14 @@ var DictionariesView = Backbone.View.extend({
 
         self.$el.html(self.template(data));
 
-        $('div.tab-item').first().click();
+        if (self.updateNeeded) {
+            self.updateNeeded = false;
+            $('div.tab-item[data-id="' + self.tabName + '"]').click();
+        } else {
+            $('div.tab-item').first().click();
+        }
+
+
         $('div.accordion').accordion({
           heightStyle: "content"
         });
